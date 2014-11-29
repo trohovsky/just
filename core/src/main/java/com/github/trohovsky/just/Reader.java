@@ -136,9 +136,8 @@ public final class Reader {
 			if (file.isDirectory()) {
 				listClassesFromDir(file, path + file.getName() + "/", classes);
 			} else {
-				if (file.getName().endsWith(CLASS_EXTENSION)
-						&& (includes == null || isContainedIn(file.getName(), includes))
-						&& (excludes == null || !isContainedIn(file.getName(), excludes))) {
+				if (file.getName().endsWith(CLASS_EXTENSION) && (includes == null || matches(file.getName(), includes))
+						&& (excludes == null || !matches(file.getName(), excludes))) {
 					classes.add(path + removeClassExtension(file.getName()));
 				}
 			}
@@ -156,8 +155,9 @@ public final class Reader {
 
 			if (includes != null || excludes != null) {
 				while ((entry = zis.getNextEntry()) != null) {
-					if (entry.getName().endsWith(CLASS_EXTENSION) && isContainedIn(entry.getName(), includes)
-							&& !isContainedIn(entry.getName(), excludes)) {
+					if (entry.getName().endsWith(CLASS_EXTENSION)
+							&& (includes == null || matches(entry.getName(), includes))
+							&& (excludes == null || !matches(entry.getName(), excludes))) {
 						classes.add(removeClassExtension(entry.getName()));
 					}
 				}
@@ -217,9 +217,8 @@ public final class Reader {
 			if (file.isDirectory()) {
 				listClassesWithDependenciesFromDir(file, path + file.getName() + "/", classes);
 			} else {
-				if (file.getName().endsWith(CLASS_EXTENSION)
-						&& (includes == null || isContainedIn(file.getName(), includes))
-						&& (excludes == null || !isContainedIn(file.getName(), excludes))) {
+				if (file.getName().endsWith(CLASS_EXTENSION) && (includes == null || matches(file.getName(), includes))
+						&& (excludes == null || !matches(file.getName(), excludes))) {
 					final Dependencies dependencies = new Dependencies();
 					visitClass(new FileInputStream(file), dependencies);
 					classes.put(path + removeClassExtension(file.getName()), dependencies.get());
@@ -239,8 +238,9 @@ public final class Reader {
 
 			if (includes != null || excludes != null) {
 				while ((entry = zis.getNextEntry()) != null) {
-					if (entry.getName().endsWith(CLASS_EXTENSION) && isContainedIn(entry.getName(), includes)
-							&& !isContainedIn(entry.getName(), excludes)) {
+					if (entry.getName().endsWith(CLASS_EXTENSION)
+							&& (includes == null || matches(entry.getName(), includes))
+							&& (excludes == null || !matches(entry.getName(), excludes))) {
 						final Dependencies dependencies = new Dependencies();
 						visitClass(zis, dependencies);
 						classesWithDependencies.put(removeClassExtension(entry.getName()), dependencies.get());
@@ -303,9 +303,8 @@ public final class Reader {
 			if (file.isDirectory()) {
 				readDependenciesFromDir(file, path + "/" + file.getName(), dependencies);
 			} else {
-				if (file.getName().endsWith(CLASS_EXTENSION)
-						&& (includes == null || isContainedIn(file.getName(), includes))
-						&& (excludes == null || !isContainedIn(file.getName(), excludes))) {
+				if (file.getName().endsWith(CLASS_EXTENSION) && (includes == null || matches(file.getName(), includes))
+						&& (excludes == null || !matches(file.getName(), excludes))) {
 					final Dependencies dependencyContainer = new Dependencies();
 					visitClass(new FileInputStream(file), dependencyContainer);
 					dependencies.addAll(dependencyContainer.get());
@@ -325,8 +324,9 @@ public final class Reader {
 
 			if (includes != null || excludes != null) {
 				while ((entry = zis.getNextEntry()) != null) {
-					if (entry.getName().endsWith(CLASS_EXTENSION) && isContainedIn(entry.getName(), includes)
-							&& !isContainedIn(entry.getName(), excludes)) {
+					if (entry.getName().endsWith(CLASS_EXTENSION)
+							&& (includes == null || matches(entry.getName(), includes))
+							&& (excludes == null || !matches(entry.getName(), excludes))) {
 						visitClass(zis, dependencies);
 					}
 				}
@@ -355,8 +355,8 @@ public final class Reader {
 			final FieldVisitor fieldVisitor = new FieldDependenciesVisitor(dependencies, annotationVisitor);
 			final MethodVisitor methodVisitor = new MethodDependenciesVisitor(dependencies, annotationVisitor,
 					signatureVisitor);
-			final ClassVisitor visitor = new ClassDependenciesVisitor(dependencies, annotationVisitor, signatureVisitor,
-					fieldVisitor, methodVisitor);
+			final ClassVisitor visitor = new ClassDependenciesVisitor(dependencies, annotationVisitor,
+					signatureVisitor, fieldVisitor, methodVisitor);
 
 			classReader.accept(visitor, 0);
 		} catch (IOException e) {
@@ -368,12 +368,12 @@ public final class Reader {
 		return name.substring(0, name.length() - CLASS_EXTENSION.length());
 	}
 
-	private static boolean isContainedIn(final String string, final String[] patterns) {
+	private static boolean matches(final String string, final String[] patterns) {
 		if (patterns == null) {
 			return false;
 		}
 		for (String pattern : patterns) {
-			if (string.contains(pattern)) {
+			if (string.startsWith(pattern)) {
 				return true;
 			}
 		}

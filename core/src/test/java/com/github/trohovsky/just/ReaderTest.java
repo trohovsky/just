@@ -28,7 +28,7 @@ public class ReaderTest {
 	private static final String APP_PATH = "target/test-app.jar";
 	private static final String LIB_PATH = "target/test-lib.jar";
 	private static final String NULL_PATH = null;
-	private static final String[] NULl_PATHS = { null, null };
+	private static final String[] NULL_PATHS = { null, null };
 
 	// listClasses
 
@@ -39,7 +39,7 @@ public class ReaderTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testListClassesNullPaths() throws IOException {
-		Reader.from(NULl_PATHS).listClasses();
+		Reader.from(NULL_PATHS).listClasses();
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class ReaderTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testReadClassesWithDependenciesListTypesNullPaths() throws IOException {
-		Reader.from(NULl_PATHS).readClassesWithDependencies();
+		Reader.from(NULL_PATHS).readClassesWithDependencies();
 	}
 
 	@Test
@@ -90,7 +90,8 @@ public class ReaderTest {
 	public void testReadClassesWithDependenciesIncludesExcludes() throws IOException {
 		Map<String, Set<String>> classesWithDependencies = Reader.from(APP_PATH)
 				.includes("com/github/trohovsky/just/test/app/includes/")
-				.excludes("com/github/trohovsky/just/test/app/includes/excludes/ExcludedClass").readClassesWithDependencies();
+				.excludes("com/github/trohovsky/just/test/app/includes/excludes/ExcludedClass")
+				.readClassesWithDependencies();
 
 		Set<String> expectedClasses = new TreeSet<String>();
 		expectedClasses.add("com/github/trohovsky/just/test/app/includes/IncludedClass");
