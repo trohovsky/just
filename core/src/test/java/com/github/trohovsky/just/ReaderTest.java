@@ -16,19 +16,40 @@
 package com.github.trohovsky.just;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+@RunWith(Parameterized.class)
 public class ReaderTest {
 
-	private static final String APP_PATH = "target/test-app.jar";
-	private static final String LIB_PATH = "target/test-lib.jar";
 	private static final String NULL_PATH = null;
 	private static final String[] NULL_PATHS = { null, null };
+	private static final String APP_JAR = "target/test-app.jar";
+	private static final String LIB_JAR = "target/test-lib.jar";
+	private static final String APP_DIR = "target/test-app";
+	private static final String LIB_DIR = "target/test-lib";
+
+	private String appPath;
+	private String libPath;
+
+	public ReaderTest(String appPath, String libPath) {
+		this.appPath = appPath;
+		this.libPath = libPath;
+	}
+
+	@Parameters
+	public static Collection<String[]> paths() {
+		return Arrays.asList(new String[][] { { APP_DIR, LIB_DIR }, { APP_JAR, LIB_JAR }, });
+	}
 
 	// listClasses
 
@@ -44,7 +65,7 @@ public class ReaderTest {
 
 	@Test
 	public void testListClassesIncludes() throws IOException {
-		Set<String> externalClasses = Reader.from(LIB_PATH).includes("com/github/trohovsky/just/test/lib/includes")
+		Set<String> externalClasses = Reader.from(libPath).includes("com/github/trohovsky/just/test/lib/includes")
 				.listClasses();
 
 		Set<String> expectedClasses = new TreeSet<String>();
@@ -55,7 +76,7 @@ public class ReaderTest {
 
 	@Test
 	public void testListTypesIncludesExcludes() throws IOException {
-		Set<String> externalClasses = Reader.from(LIB_PATH).includes("com/github/trohovsky/just/test/lib/includes")
+		Set<String> externalClasses = Reader.from(libPath).includes("com/github/trohovsky/just/test/lib/includes")
 				.excludes("com/github/trohovsky/just/test/lib/includes/excludes/ExcludedClass").listClasses();
 
 		Set<String> expectedClasses = new TreeSet<String>();
@@ -77,7 +98,7 @@ public class ReaderTest {
 
 	@Test
 	public void testReadClassesWithDependenciesIncludes() throws IOException {
-		Map<String, Set<String>> classesWithDependencies = Reader.from(APP_PATH)
+		Map<String, Set<String>> classesWithDependencies = Reader.from(appPath)
 				.includes("com/github/trohovsky/just/test/app/includes").readClassesWithDependencies();
 
 		Set<String> expectedClasses = new TreeSet<String>();
@@ -88,7 +109,7 @@ public class ReaderTest {
 
 	@Test
 	public void testReadClassesWithDependenciesIncludesExcludes() throws IOException {
-		Map<String, Set<String>> classesWithDependencies = Reader.from(APP_PATH)
+		Map<String, Set<String>> classesWithDependencies = Reader.from(appPath)
 				.includes("com/github/trohovsky/just/test/app/includes/")
 				.excludes("com/github/trohovsky/just/test/app/includes/excludes/ExcludedClass")
 				.readClassesWithDependencies();

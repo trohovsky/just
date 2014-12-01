@@ -45,6 +45,48 @@ limitations under the License.
 	<build>
 		<plugins>
 			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<execution>
+						<id>test-app</id>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<phase>test-compile</phase>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>${project.build.testOutputDirectory}</directory>
+									<includes>
+										<include>**/test/app/**</include>
+									</includes>
+								</resource>
+							</resources>
+							<outputDirectory>${project.build.directory}/test-app</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>test-lib</id>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<phase>test-compile</phase>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>${project.build.testOutputDirectory}</directory>
+									<includes>
+										<include>**/test/lib/**</include>
+									</includes>
+								</resource>
+							</resources>
+							<outputDirectory>${project.build.directory}/test-lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.5</version>
 				<executions>
@@ -55,11 +97,8 @@ limitations under the License.
 						</goals>
 						<phase>test-compile</phase>
 						<configuration>
-							<classesDirectory>${project.build.testOutputDirectory}</classesDirectory>
+							<classesDirectory>${project.build.directory}/test-app</classesDirectory>
 							<finalName>test-app</finalName>
-							<includes>
-								<include>**/test/app/**</include>
-							</includes>
 						</configuration>
 					</execution>
 					<execution>
@@ -69,11 +108,8 @@ limitations under the License.
 						</goals>
 						<phase>test-compile</phase>
 						<configuration>
-							<classesDirectory>${project.build.testOutputDirectory}</classesDirectory>
+							<classesDirectory>${project.build.directory}/test-lib</classesDirectory>
 							<finalName>test-lib</finalName>
-							<includes>
-								<includes>**/test/lib/**</includes>
-							</includes>
 						</configuration>
 					</execution>
 				</executions>

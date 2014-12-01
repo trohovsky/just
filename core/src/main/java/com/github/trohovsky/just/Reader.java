@@ -136,9 +136,10 @@ public final class Reader {
 			if (file.isDirectory()) {
 				listClassesFromDir(file, path + file.getName() + "/", classes);
 			} else {
-				if (file.getName().endsWith(CLASS_EXTENSION) && (includes == null || matches(file.getName(), includes))
-						&& (excludes == null || !matches(file.getName(), excludes))) {
-					classes.add(path + removeClassExtension(file.getName()));
+				String className = path + removeClassExtension(file.getName());
+				if (file.getName().endsWith(CLASS_EXTENSION) && (includes == null || matches(className, includes))
+						&& (excludes == null || !matches(className, excludes))) {
+					classes.add(className);
 				}
 			}
 		}
@@ -217,11 +218,12 @@ public final class Reader {
 			if (file.isDirectory()) {
 				listClassesWithDependenciesFromDir(file, path + file.getName() + "/", classes);
 			} else {
-				if (file.getName().endsWith(CLASS_EXTENSION) && (includes == null || matches(file.getName(), includes))
-						&& (excludes == null || !matches(file.getName(), excludes))) {
+				String className = path + removeClassExtension(file.getName());
+				if (file.getName().endsWith(CLASS_EXTENSION) && (includes == null || matches(className, includes))
+						&& (excludes == null || !matches(className, excludes))) {
 					final Dependencies dependencies = new Dependencies();
 					visitClass(new FileInputStream(file), dependencies);
-					classes.put(path + removeClassExtension(file.getName()), dependencies.get());
+					classes.put(className, dependencies.get());
 				}
 			}
 		}
@@ -303,8 +305,9 @@ public final class Reader {
 			if (file.isDirectory()) {
 				readDependenciesFromDir(file, path + "/" + file.getName(), dependencies);
 			} else {
-				if (file.getName().endsWith(CLASS_EXTENSION) && (includes == null || matches(file.getName(), includes))
-						&& (excludes == null || !matches(file.getName(), excludes))) {
+				String className = path + removeClassExtension(file.getName());
+				if (file.getName().endsWith(CLASS_EXTENSION) && (includes == null || matches(className, includes))
+						&& (excludes == null || !matches(className, excludes))) {
 					final Dependencies dependencyContainer = new Dependencies();
 					visitClass(new FileInputStream(file), dependencyContainer);
 					dependencies.addAll(dependencyContainer.get());
